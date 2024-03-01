@@ -18,6 +18,6 @@ Align_methylation: Contains instructions, code and files to reproduce WGBS data 
 
 Analyze_overlaps: Contains instructions, code and files to reproduce genome-wide analysis of antisense transcription for figures 3-4 and supplemental figures 1-2. (Code by Till Schwämmle)
 
-Nascent_transcriptome: Contains instructions, code and files to reproduce the generation of a nascent transcriptome based on TT-seq data from Gjaltema et al., 2022 (GSE167358). (Code by Till Schwämmle and Melissa Bothe)
+Nascent_transcriptome: Contains instructions, code and files to reproduce the generation of a nascent transcriptome based on TT-seq data from Gjaltema et al., 2022 (GSE167358). (Code by Till Schwämmle, with help from Melissa Bothe)
 
 
