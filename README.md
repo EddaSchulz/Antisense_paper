@@ -20,4 +20,9 @@ Analyze_overlaps: Contains instructions, code and files to reproduce genome-wide
 
 Nascent_transcriptome: Contains instructions, code and files to reproduce the generation of a nascent transcriptome based on TT-seq data from Gjaltema et al., 2022 (GSE167358). (Code by Till Schwämmle, with help from Melissa Bothe)
 
+AS_Model: Contains all code that was used to perform and analyze the simulations of the antisense model (Code by Verena Mutzel)
+
+synthetic_AS_locus: Contains the data and code of the flow cytometry measurements of the synthetic antisense locus
+
+
 
