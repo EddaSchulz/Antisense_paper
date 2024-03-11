@@ -1,20 +1,15 @@
 # Antisense transcription can induce expression memory via stable promoter repression
-Verena Mutzel, Till Schwämmle, Melissa Bothe, Rutger A.F. Gjaltema, Benedikt Boesen, Lucia Librenjak, Svearike Oeverdiek, Ilona Dunkel, Gemma Noviello and Edda G. Schulz 
+Verena Mutzel, Till Schwämmle, Svearike Oeverdieck, Lucia Librenjak, Benedikt Boesen, Melissa Bothe, Rutger A.F. Gjaltema, Ilona Dunkel, Gemma Noviello and Edda G. Schulz 
 
-Data and code used to perform computational analyses in Mutzel et al., 2024. (LINK/TO/PAPER)
+Data and code used to perform computational analyses in Mutzel et al., 2024. (https://www.biorxiv.org/content/10.1101/2024.03.06.583761v1)
 
 
 ## Abstract
-Antisense transcription is widespread across genomes. Despite this, a systematic understanding of its biological function is lacking. Here, we set out to characterize the regulatory responses that can be elicited by antisense transcription. To address this question, we stably integrate a synthetic reporter construct with an inducible antisense promoter into mouse embryonic stem cells (mESCs) and measure stimulus-response curves and hysteresis. We developed a modeling framework describing transcription from initiation to transcript degradation to systematically characterize the regulatory responses elicited by antisense transcription. The model predicts that ultrasensitivity and hysteresis in the dose-response curve can arise for antisense pairs with the ability to stably repress the convergent promoter through the recruitment of epigenetic modifications. When we adapt our experimental system to fit these conditions, it indeed displays expression memory over timescales of several days. 
-
-To corroborate our findings in a comprehensive manner, we identify antisense transcription across the genome using nascent RNA-sequencing data. We find that globally repression via antisense transcription is induced by promoter repression, but not primarily via transcriptional interference. Additionally, we find that high levels of DNA methylation at the promoter, but not of repressive histone marks, such as H3K27me3 or H3K9me3, correlate with repression via antisense transcription.  
-
-Our unbiased systematic analysis establishes a potential general functional role of antisense transcription in converting graded input signals into non-linear hysteretic transcriptional responses. This allows genes to respond in an all-or-nothing manner, and to remember transient stimuli for extended periods and lock in alternative expression states allowing cells to establish and maintain molecularly distinct cell fates.
+The capacity of cells to retain a memory of previous signals enables them to adopt unique cell fates and adjust to their surrounding environment. The underlying gene expression memory can arise from mutual repression of two genes, forming a toggle switch. Such mutual repression may occur at antisense loci, where two convergently oriented genes repress each other in cis. Under which conditions antisense transcription can generate expression memory remains poorly understood. To address this question, we combine mathematical modeling, genomics and a synthetic biology approach. Through simulations we show that stable memory can emerge, if both genes in an antisense pair transcribe through the convergent promoter and induce a stable repressive chromatin state. Genome-wide analysis of nascent transcription further supports antisense-mediated promoter repression with promoter-overlapping antisense gene pairs exhibiting mutually exclusive expression. Through constructing a synthetic antisense locus in mouse embryonic stem cells (mESCs) we then show that such a locus architecture can indeed maintain a memory of a transient stimulus. Mutual repression and the capacity for memory formation are elevated, when mESCs differentiate, showing that epigenetic memory is a cell type-specific property. Our finding that stem cells adapt their ability to remember stimuli as they differentiate might help to elucidate how stemness is maintained.
 
 
 ## Description
-Align_methylation: Contains instructions, code and files to reproduce WGBS data alignment (GSEXXX). (Code by Melissa Bothe)
-
+Align_methylation: Contains instructions, code and files to reproduce WGBS data alignment (GSE253792). (Code by Melissa Bothe)
 
 Analyze_overlaps: Contains instructions, code and files to reproduce genome-wide analysis of antisense transcription for figures 3-4 and supplemental figures 1-2. (Code by Till Schwämmle)
 
