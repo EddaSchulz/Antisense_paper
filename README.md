@@ -17,7 +17,7 @@ Nascent_transcriptome: Contains instructions, code and files to reproduce the ge
 
 AS_Model: Contains all code that was used to perform and analyze the simulations of the antisense model. (Code by Verena Mutzel)
 
-synthetic_AS_locus: Contains the data and code of the flow cytometry measurements of the synthetic antisense locus. (Code by Verena Mutzel)
+synthetic_AS_locus: Contains the data and code of the flow cytometry measurements of the synthetic antisense locus. (Code by Verena Mutzel).
 
 
 
