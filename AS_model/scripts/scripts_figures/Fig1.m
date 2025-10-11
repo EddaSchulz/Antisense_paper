@@ -33,29 +33,19 @@ path_1 = '../../simulations/simplified_models_1/';
 path_2 = '../../simulations/simplified_models_2/';
 path_3 = '../../simulations/simplified_models_3/';
 
-filename{1} = ([oripath, 'fsw_general_as_model_allrep_200319.txt']);
-filename{2} = ([path_1, 'fsw_simpl#1_1OFF_state_as_model_200319.txt']);
-filename{3} = ([path_1, 'fsw_simpl#2_no_term_as_model_200319.txt']);
-filename{4} = ([path_1, 'fsw_simpl#3_1step_ini_as_model_200319.txt']);
-filename{5} = ([path_1, 'fsw_simpl#4_no_SDI_as_model_200319.txt']);
-filename{6} = ([path_1, 'fsw_simpl#6_no_PR_as_model_200319.txt']);
-filename{7} = ([path_1, 'fsw_simpl#7_no_PC_as_model_200319.txt']);
-filename{8} = ([path_2, 'fsw_1OFF_1step_ini_as_model_200319.txt']);
-filename{9} = ([path_2, 'fsw_1OFF_no_SDI_as_model_200319.txt']);
-filename{10} = ([path_2, 'fsw_1step_ini_no_SDI_as_model_200319.txt']);
-filename{11} = ([path_3, 'fsw_1OFF_1step_ini_no_SDI_as_model_200319.txt']);
+filename{1} = ([oripath, 'FST_allrep1.txt']);
+filename{2} = ([path_1, 'FST__simpl#1_1OFF_state.txt']);
+filename{3} = ([path_1, 'FST_simpl#2_no_term.txt']);
+filename{4} = ([path_1, 'FST_simpl#3_1step_ini.txt']);
+filename{5} = ([path_1, 'FST_simpl#4_no_SDI.txt']);
+filename{6} = ([path_1, 'FST_simpl#6_no_PR.txt']);
+filename{7} = ([path_1, 'FST_simpl#7_no_PC.txt']);
+filename{8} = ([path_2, 'FST_1OFF_1step_ini.txt']);
+filename{9} = ([path_2, 'FST_1OFF_no_SDI.txt']);
+filename{10} = ([path_2, 'FST_1step_ini_no_SDI.txt']);
+filename{11} = ([path_3, 'FST_1OFF_1step_ini_no_SDI.txt']);
 
-ext_filename{1} = ([oripath, 'fsw_add_par_as_model_allrep_200319_220125.txt']);
-ext_filename{2} = ([path_1, 'fsw_add_par_as_model_simpl#1_1OFF_state_200319_220125.txt']);
-ext_filename{3} = ([path_1, 'fsw_add_par_as_model_simpl#2_no_term_200319_220125.txt']);
-ext_filename{4} = ([path_1, 'fsw_add_par_as_model_simpl#3_1step_ini_200319_220125.txt']);
-ext_filename{5} = ([path_1, 'fsw_add_par_as_model_simpl#4_no_SDI_200319_220125.txt']);
-ext_filename{6} = ([path_1, 'fsw_add_par_as_model_simpl#6_no_PR_200319_220125.txt']);
-ext_filename{7} = ([path_1, 'fsw_add_par_as_model_simpl#7_no_PC_200319_220125.txt']);
-ext_filename{8} = ([path_2, 'fsw_add_par_as_model_simpl_1OFF_1step_ini_200319_220125.txt']);
-ext_filename{9} = ([path_2, 'fsw_add_par_as_model_simpl_1OFF_no_SDI_200319_220125.txt']);
-ext_filename{10} = ([path_2, 'fsw_add_par_as_model_simpl_1step_ini_no_SDI_200319_220125.txt']);
-ext_filename{11} = ([path_3, 'fsw_add_par_as_model_simpl_1OFF_1step_ini_no_SDI_200319_220125.txt']);
+ext_filename{1} = ([oripath, 'FST_allrep2.txt']);
 
 mymodel{1} = 'Ori\_Model';
 mymodel{2} = '1OFF';
@@ -94,15 +84,18 @@ var_par = [1 2 5 6 11 12 13 14 25 26];
 var_log = [1 2 5 6 11 12 13 14];
 fsw1 = nr_p+1:nr_p+3;
 fsw2 = nr_p+4:nr_p+6;
-thresh_st = 96; %Stability threshold (before: 100)
-thresh_unst = 2;% before 10
+thresh_st = 96; 
+thresh_unst = 2;
 fr_stable = NaN(length(filename),3);
 %% Read in simulations
 for f=1:length(filename)
-    temp1 = dlmread(filename{f}); 
-    temp2 = dlmread(ext_filename{f}); 
-    data{f} = [temp1];
+    temp1 = dlmread(filename{f});
+    if f==1
+        temp2 = dlmread(ext_filename{f}); 
     data{f} = [temp1;temp2];
+    else
+        data{f} = [temp1];
+    end
     data_log{f} = data{f};
     data_log{f}(:,var_log) = log10(data{f}(:,var_log)); 
 end
@@ -197,7 +190,7 @@ b2(2).FaceColor=cm2(3,:);
 set(gca,'YLim',[0 2.3],'YTickLabel',{},'XTickLabel',{},'TickLength',[0.004 0],'TickDir','out','Linewidth',1,'Fontsize',fs,'Units','Centimeters','Position',[pos_x(1) pos_y(1)-1.9 6-6/11 0.8])
 
 set(gcf,'renderer','Painters')
-print('../../figures/Fig1fg','-depsc','-loose')
+print('../../figures/Fig1ef','-depsc','-loose')
 
 
 
@@ -364,4 +357,4 @@ for i=1:length(ind_sets)
     
 end
 figure(2);
-print(gcf,'../../figures/Fig1e','-depsc','-loose')
+print(gcf,'../../figures/Fig1d','-depsc','-loose')

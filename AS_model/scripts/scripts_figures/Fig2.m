@@ -20,8 +20,7 @@ pos_x=[2.7:2.5:20.2]; %pos_y=[2 6.5 11 15.5 19.5:3.8:30];
 pos_y=[0:2.2:11.4]; pos_y=flip(pos_y);
 
 %% Simulation files max simpl model
-filename{1} = ([mypath, 'fsw_rand_par_var_simplified_as_model_200319.txt']);
-filename{2} = ([mypath, 'fsw_rand_add_par_simpmodel_200319_220125.txt']);
+filename{1} = ([mypath, 'FST_max_simpl.txt']);
 
 % Models
 mymodel{1} = 'simplified\_model';
@@ -140,8 +139,8 @@ b2(1).FaceColor=cm2(2,:);
 b2(2).FaceColor=cm2(3,:);
 set(gca,'YLim',[0 10],'YTick',[0 5 10],'XTickLabel',{n_arch},'TickLength',[0.02 0],'TickDir','out','Linewidth',1,'Fontsize',6,'Units','Centimeters','Position',[2.7 11-0.8 1.63 1])
 
-%set(gcf,'renderer','Painters')
-%print('../../figures/Fig2d','-depsc','-loose')
+set(gcf,'renderer','Painters')
+print('../../figures/Fig2c','-depsc','-loose')
 
 %% Parameter distribution in sets of different stability for of each locus architecture
 var_par = [1 2 5 6 21 24 26];
@@ -215,6 +214,6 @@ f.Position = [680   517   950   450];
         end
         
     end
-    %print(['../../figures/Fig2e'],'-depsc','-loose')
+    print(['../../figures/Fig2d'],'-depsc','-loose')
  end
 
