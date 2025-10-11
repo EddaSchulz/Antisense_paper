@@ -22,24 +22,24 @@ theme_set(theme_classic() +
                   axis.title = element_text(size = 6), strip.text = element_text(size = 6),
                   strip.background = element_blank(), legend.title = element_blank()))
 
-fcs_dir_r1 <- "../data/fcs_files_Fig5/R1/"
+fcs_dir_r1 <- "../data/fcs_files_Fig6/R1/"
 
-fcs_dir_r2 <- "../data/fcs_files_Fig5/R2/"
+fcs_dir_r2 <- "../data/fcs_files_Fig6/R2/"
 
-fcs_dir_r3 <- "../data/fcs_files_Fig5/R3/"
+fcs_dir_r3 <- "../data/fcs_files_Fig6/R3/"
 
-fcs_dir_r4 <- "../data/fcs_files_Fig5/R4/"
+fcs_dir_r4 <- "../data/fcs_files_Fig6/R4/"
 
-fcs_dir_r5 <- "../data/fcs_files_Fig5/R5/"
+fcs_dir_r5 <- "../data/fcs_files_Fig6/R5/"
 
 output_dir <- "../figures/"
 setwd(output_dir)
 
-flowset_r1 <- read.flowSet(path = fcs_dir_r1, min.limit = 0)
-flowset_r2 <- read.flowSet(path = fcs_dir_r2, min.limit = 0)
-flowset_r3 <- read.flowSet(path = fcs_dir_r3, min.limit = 0)
-flowset_r4 <- read.flowSet(path = fcs_dir_r4, min.limit = 0)
-flowset_r5 <- read.flowSet(path = fcs_dir_r5, min.limit = 0)
+flowset_r1 <- suppressWarnings(read.flowSet(path = fcs_dir_r1, min.limit = 0))
+flowset_r2 <- suppressWarnings(read.flowSet(path = fcs_dir_r2, min.limit = 0))
+flowset_r3 <- suppressWarnings(read.flowSet(path = fcs_dir_r3, min.limit = 0))
+flowset_r4 <- suppressWarnings(read.flowSet(path = fcs_dir_r4, min.limit = 0))
+flowset_r5 <- suppressWarnings(read.flowSet(path = fcs_dir_r5, min.limit = 0))
 
 autoplot(flowset_r1[1:12], x="FSC-A", y="SSC-A")
 autoplot(flowset_r2[1:12], x="FSC-A", y="SSC-A")
@@ -318,157 +318,6 @@ help_stats_ini2 <- stats_total %>%
 mfi_rat <- left_join(help_stats_ini1,help_stats_ini2) %>% 
   mutate(rat_gfp=gfp_ini1/gfp_ini2,rat_tdt=tdt_ini1/tdt_ini2,rat_tbfp=tbfp_ini1/tbfp_ini2) 
 
-###### SIMULATION of GFP and tdT kinetics in the absence of memory
-# parameters
-kdeg_gfp <- log(2)/(26*0.59) # literature half life GFP:26h, fold change of 0.59 when comparing (GFP-FKBP-1uM-Shld)/(WT-GFP) Expression levels 
-kdeg_tdt <- log(2)/(26*0.86)
-kdil <- log(2)/12 # dilution due to cell division (cell cycle length ~11h (Waisman2018))
-kdd_gfp <- kdeg_gfp + kdil # total rate of GFP removal due to degradation & dilution
-kdd_tdt <- kdeg_tdt + kdil # total rate of GFP removal due to degradation & dilution
-time <- (0:100)
-
-### Analytical solution of ODE 2i
-gfp_ode1 <- (1-exp(time*(-kdd_gfp)))# high Dox -> no Dox with GFP(t=0)=0 and kprod=kdeg
-gfp_ode2 <- (exp(time*(-kdd_gfp)))# no Dox -> high Dox with GFP(t=0)=1 and kprod=0
-tdt_ode1 <- (exp(time*(-kdd_tdt)))# high Dox -> no Dox
-tdt_ode2 <- (1-exp(time*(-kdd_tdt)))# no Dox -> high Dox
-
-
-### Scaling of simulation to FACS data 
-mean_sc <- mean_reps %>% 
-  filter(((inicond=="Ini1-noDox" & c1=="0ngDox")|(inicond=="Ini2-highDox" & c1=="2000ngDox"))&cellstate!="2i-LIFw") %>% 
-  group_by(timepoint,cellstate,inicond,plasmid) %>% 
-  dplyr::summarize(gfp = mean(mfi_gfp_rep),tdt = mean(mfi_tdt_rep)) %>%
-  pivot_wider(names_from=c(cellstate,inicond,plasmid),values_from = c(gfp,tdt))
-
-# 2i: scale to time-average
-gfp_ode1_sc_2i_505 <- gfp_ode1*(mean(mean_sc$'gfp_2i_Ini1-noDox_SP505')-mean(mean_sc$'gfp_2i_Ini2-highDox_SP505'))+mean(mean_sc$'gfp_2i_Ini2-highDox_SP505')
-gfp_ode2_sc_2i_505 <- gfp_ode2*(mean(mean_sc$'gfp_2i_Ini1-noDox_SP505')-mean(mean_sc$'gfp_2i_Ini2-highDox_SP505'))+mean(mean_sc$'gfp_2i_Ini2-highDox_SP505')
-gfp_ode1_sc_2i_538 <- gfp_ode1*(mean(mean_sc$'gfp_2i_Ini1-noDox_SP538',na.rm=TRUE)-mean(mean_sc$'gfp_2i_Ini2-highDox_SP538',na.rm=TRUE))+mean(mean_sc$'gfp_2i_Ini2-highDox_SP538',na.rm=TRUE)
-gfp_ode2_sc_2i_538 <- gfp_ode2*(mean(mean_sc$'gfp_2i_Ini1-noDox_SP538',na.rm=TRUE)-mean(mean_sc$'gfp_2i_Ini2-highDox_SP538',na.rm=TRUE))+mean(mean_sc$'gfp_2i_Ini2-highDox_SP538',na.rm=TRUE)
-
-tdt_ode1_sc_2i_505 <- tdt_ode1*(mean(mean_sc$'tdt_2i_Ini2-highDox_SP505')-mean(mean_sc$'tdt_2i_Ini1-noDox_SP505'))+mean(mean_sc$'tdt_2i_Ini1-noDox_SP505')
-tdt_ode2_sc_2i_505 <- tdt_ode2*(mean(mean_sc$'tdt_2i_Ini2-highDox_SP505')-mean(mean_sc$'tdt_2i_Ini1-noDox_SP505'))+mean(mean_sc$'tdt_2i_Ini1-noDox_SP505')
-tdt_ode1_sc_2i_538 <- tdt_ode1*(mean(mean_sc$'tdt_2i_Ini2-highDox_SP538',na.rm=TRUE)-mean(mean_sc$'tdt_2i_Ini1-noDox_SP538',na.rm=TRUE))+mean(mean_sc$'tdt_2i_Ini1-noDox_SP538',na.rm=TRUE)
-tdt_ode2_sc_2i_538 <- tdt_ode2*(mean(mean_sc$'tdt_2i_Ini2-highDox_SP538',na.rm=TRUE)-mean(mean_sc$'tdt_2i_Ini1-noDox_SP538',na.rm=TRUE))+mean(mean_sc$'tdt_2i_Ini1-noDox_SP538',na.rm=TRUE)
-
-gfp_ode<- bind_cols(time,gfp_ode1_sc_2i_505,gfp_ode2_sc_2i_505,gfp_ode1_sc_2i_538,gfp_ode2_sc_2i_538) %>% 
-  transmute(timepoint=...1, gfp_ode1_2i_505=...2, gfp_ode2_2i_505=...3,gfp_ode1_2i_538=...4, gfp_ode2_2i_538=...5) %>% 
-  pivot_longer(!timepoint,names_to = c("reporter","inicond","cellstate","plasmid") , values_to = c("mfi_gfp_ode"), names_sep="_") %>% 
-  mutate(c1="0ngDox", c1=replace(c1,inicond == "ode2","2000ngDox")) %>% 
-  mutate(inicond = ifelse(inicond == 'ode2', 'Ini1-noDox', 'Ini2-highDox')) %>% 
-  mutate(plasmid = ifelse(plasmid == '505', 'SP505', 'SP538')) %>% 
-  select(-reporter)
-
-tdt_ode<- bind_cols(time,tdt_ode1_sc_2i_505,tdt_ode2_sc_2i_505,tdt_ode1_sc_2i_538,tdt_ode2_sc_2i_538) %>% 
-  transmute(timepoint=...1, tdt_ode1_2i_505=...2, tdt_ode2_2i_505=...3,tdt_ode1_2i_538=...4, tdt_ode2_2i_538=...5) %>% 
-  pivot_longer(!timepoint,names_to = c("reporter","inicond","cellstate","plasmid") , values_to = c("mfi_tdt_ode"), names_sep="_") %>% 
-  mutate(c1="0ngDox", c1=replace(c1,inicond == "ode2","2000ngDox")) %>% 
-  mutate(inicond = ifelse(inicond == 'ode2', 'Ini1-noDox', 'Ini2-highDox')) %>% 
-  mutate(plasmid = ifelse(plasmid == '505', 'SP505', 'SP538')) %>% 
-  select(-reporter)
-
-##### Quantify memory by testing different offsets for the ode simulation:
-# With which offset does ODE simulation best explain the data?
-
-# define range of ode offsets (=memory of the system)
-offset<-cbind(0:48)
-# measurement timepoints
-tp<- unique(stats_total$timepoint)
-tp<- tp[tp <= 96]
-tp<-sort(tp)
-
-ssqr_gfp = data.frame()#dataframe to save sum of squared residuals for each offset
-ssqr_tdt = data.frame()
-# loop over offsets
-for (o in offset) {
-  # shift ode simulation by offset
-  gfp_ode_shift <- gfp_ode %>% 
-    mutate(timepoint = timepoint + offset(o)) 
-  tdt_ode_shift <- tdt_ode %>% 
-    mutate(timepoint = timepoint + offset(o)) 
-  # select rows from ode simulation that correspond to measurement timepoints
-  gfp_ode_shift <- gfp_ode_shift %>% filter(timepoint %in% tp)
-  tdt_ode_shift <- tdt_ode_shift %>% filter(timepoint %in% tp)
-  # add measurement timpoints that fall into window 0:offset-1 with initial gfp value
-  tp_add <- tp[tp < o]
-  for (j in tp_add) {
-    gfp_ode_shift<- gfp_ode_shift %>% 
-    bind_rows(gfp_ode %>% filter(timepoint == 0) %>% mutate(timepoint =j))
-    tdt_ode_shift<- tdt_ode_shift %>% 
-      bind_rows(tdt_ode %>% filter(timepoint == 0) %>% mutate(timepoint =j))
-  }
-  # calculate SQRs between shifted ODE and data
-  data_gfp<-stats_total %>% 
-    filter((inicond=="Ini2-highDox"&c1=="0ngDox")|(inicond=="Ini1-noDox"&c1=="2000ngDox")) %>% 
-    group_by(cellstate,timepoint,inicond,c1,plasmid,replicate) %>% 
-    summarize(mean_mfi_gfp = mean(mfi_gfp))
-  sqr_gfp<-left_join(gfp_ode_shift, data_gfp, by = c("timepoint", "inicond","plasmid","cellstate", "c1")) %>% 
-    mutate(sqr=(mfi_gfp_ode-mean_mfi_gfp)^2) %>% 
-    mutate(offset=o) %>% 
-    filter(!is.na(mean_mfi_gfp)) %>% 
-    group_by(cellstate,inicond,c1,plasmid,replicate) %>% 
-    summarize(sum_sqr=sum(sqr),offset=mean(offset))
-  ssqr_gfp <- rbind(ssqr_gfp,sqr_gfp)
-  
-  data_tdt<-stats_total %>% 
-    filter((inicond=="Ini2-highDox"&c1=="0ngDox")|(inicond=="Ini1-noDox"&c1=="2000ngDox")) %>% 
-    group_by(cellstate,timepoint,inicond,c1,plasmid,replicate) %>% 
-    summarize(mean_mfi_tdt = mean(mfi_tdt))
-  sqr_tdt<-left_join(tdt_ode_shift, data_tdt, by = c("timepoint", "inicond","plasmid","cellstate", "c1")) %>% 
-    mutate(sqr=(mfi_tdt_ode-mean_mfi_tdt)^2) %>% 
-    mutate(offset=o) %>% 
-    filter(!is.na(mean_mfi_tdt)) %>% # remove rows with missing measurements (SP538 not measured at 8h)
-    group_by(cellstate,inicond,c1,plasmid,replicate) %>% 
-    summarize(sum_sqr=sum(sqr),offset=mean(offset))
-  ssqr_tdt <- rbind(ssqr_tdt,sqr_tdt)
-}
-# select minimal ssqr
-min_ssqr_gfp <- ssqr_gfp %>% group_by(cellstate, inicond, c1,plasmid, replicate) %>%  
-  filter(sum_sqr == min(sum_sqr)) %>% 
-  group_by(cellstate, inicond, c1,plasmid) %>%  
-  summarise(mean_offset = mean(offset, na.rm = TRUE), sd_offset = sd(offset, na.rm = TRUE), min_offset=min(offset, na.rm = TRUE), max_offset = max(offset, na.rm = TRUE), sum_sqr=mean(sum_sqr, na.rm = TRUE))  
-min_ssqr_tdt <- ssqr_tdt %>% group_by(cellstate, inicond, c1,plasmid, replicate) %>%  
-  filter(sum_sqr == min(sum_sqr)) %>% 
-  group_by(cellstate, inicond, c1,plasmid) %>%  
-  summarise(mean_offset = mean(offset, na.rm = TRUE), sd_offset = sd(offset, na.rm = TRUE), , min_offset=min(offset, na.rm = TRUE), max_offset = max(offset, na.rm = TRUE), sum_sqr=mean(sum_sqr, na.rm = TRUE)) 
-
-
-# to include shifted ode in plot, construct tibble with optimally shifted ode
-gfp_ode_memory <- gfp_ode %>% 
-  left_join(min_ssqr_gfp,by = c( "inicond","plasmid","cellstate", "c1")) %>% 
-  mutate(timepoint = timepoint + mean_offset) 
-for (i in unique(gfp_ode_memory$plasmid)) {
-  for(j in unique(gfp_ode_memory$inicond)) {
-    for(s in unique(gfp_ode_memory$cellstate)) {
-add_gfp_ode_memory <- gfp_ode_memory %>%
-  filter(timepoint==mean_offset&plasmid==i&inicond==j&cellstate==s) %>%
-  group_by(timepoint,inicond,cellstate,plasmid,mfi_gfp_ode,c1,sum_sqr,mean_offset) %>%
-  slice(rep(1, mean_offset)) %>%
-  ungroup() %>%
-  mutate(timepoint=row_number())
-  gfp_ode_memory<-rbind(gfp_ode_memory,add_gfp_ode_memory)
-    }
-  }
-}
-
-tdt_ode_memory <- tdt_ode %>% 
-  left_join(min_ssqr_tdt,by = c( "inicond","plasmid","cellstate", "c1")) %>% 
-  mutate(timepoint = timepoint + mean_offset) 
-for (i in unique(tdt_ode_memory$plasmid)) {
-  for(j in unique(tdt_ode_memory$inicond)) {
-    for(s in unique(tdt_ode_memory$cellstate)) {
-      add_tdt_ode_memory <- tdt_ode_memory %>%
-        filter(timepoint==mean_offset&plasmid==i&inicond==j&cellstate==s) %>%
-        group_by(timepoint,inicond,cellstate,plasmid,mfi_tdt_ode,c1,sum_sqr,mean_offset) %>%
-        slice(rep(1, mean_offset)) %>%
-        ungroup() %>%
-        mutate(timepoint=row_number())
-      tdt_ode_memory<-rbind(tdt_ode_memory,add_tdt_ode_memory)
-    }
-  }
-}
-
 
 ########## Test for statistical significance: Population GFP and tdt means different between 2 inis?
 
@@ -494,130 +343,197 @@ sel.stat = stats_total.stat %>%
   mutate(y_gfp_2i=3.6,y_gfp_lifw=4.1,y_tdt_2i=4.25,y_tdt_lifw=5.15,y_gfp_2i_538=4.23,y_tdt_2i_538=5,lab_gfp=ifelse(signif(pval.2sample_gfp,2)<0.05,'*',''),lab_tdt=ifelse(signif(pval.2sample_tdt,2)<0.05,'*',''))
 
 
+### Read in MAtlab simulations
+sim_esc_gfp_ini2 <- as.data.frame(read.csv("../scripts/sim/sim_best_fit_2i_Ini2_gfp.csv")) 
+colnames(sim_esc_gfp_ini2) <- c("timepoint", "mfi_gfp_ode")
+sim_esc_tdt_ini2 <- as.data.frame(read.csv("../scripts/sim/sim_best_fit_2i_Ini2_tdt.csv"))
+colnames(sim_esc_tdt_ini2) <- c("timepoint", "mfi_tdt_ode")
+sim_diff_gfp_ini2 <- as.data.frame(read.csv("../scripts/sim/sim_best_fit_diff_Ini2_gfp.csv"))
+colnames(sim_diff_gfp_ini2) <- c("timepoint", "mfi_gfp_ode")
+sim_diff_tdt_ini2 <- as.data.frame(read.csv("../scripts/sim/sim_best_fit_diff_Ini2_tdt.csv"))
+colnames(sim_diff_tdt_ini2) <- c("timepoint", "mfi_tdt_ode")
 
+sim_esc_gfp_ini2_wo_delay <- as.data.frame(read.csv("../scripts/sim/sim_no_delay_2i_Ini2_gfp.csv")) %>% 
+  mutate(c1 = "0ngDox", cellstate="2i", plasmid="SP505", inicond="Ini2-highDox-sim")
+colnames(sim_esc_gfp_ini2_wo_delay) <- c("timepoint", "mfi_gfp_ode")
+sim_esc_tdt_ini2_wo_delay <- as.data.frame(read.csv("../scripts/sim/sim_no_delay_2i_Ini2_tdt.csv"))
+colnames(sim_esc_tdt_ini2_wo_delay) <- c("timepoint", "mfi_tdt_ode")
+sim_diff_gfp_ini2_wo_delay <- as.data.frame(read.csv("../scripts/sim/sim_no_delay_diff_Ini2_gfp.csv"))
+colnames(sim_diff_gfp_ini2_wo_delay) <- c("timepoint", "mfi_gfp_ode")
+sim_diff_tdt_ini2_wo_delay <- as.data.frame(read.csv("../scripts/sim/sim_no_delay_diff_Ini2_tdt.csv"))
+colnames(sim_diff_tdt_ini2_wo_delay) <- c("timepoint", "mfi_tdt_ode")
+
+sim_esc_gfp_ini1 <- as.data.frame(read.csv("../scripts/sim/sim_2i_Ini1_gfp.csv")) 
+colnames(sim_esc_gfp_ini1) <- c("timepoint", "mfi_gfp_ode")
+sim_esc_tdt_ini1 <- as.data.frame(read.csv("../scripts/sim/sim_2i_Ini1_tdt.csv"))
+colnames(sim_esc_tdt_ini1) <- c("timepoint", "mfi_tdt_ode")
+sim_diff_gfp_ini1 <- as.data.frame(read.csv("../scripts/sim/sim_diff_Ini1_gfp.csv"))
+colnames(sim_diff_gfp_ini1) <- c("timepoint", "mfi_gfp_ode")
+sim_diff_tdt_ini1 <- as.data.frame(read.csv("../scripts/sim/sim_diff_Ini1_tdt.csv"))
+colnames(sim_diff_tdt_ini1) <- c("timepoint", "mfi_tdt_ode")
+sim_diff_tdt_dox_cntrl <- as.data.frame(read.csv("../scripts/sim/sim_diff_dox_cntrl_tdt.csv"))
+colnames(sim_diff_tdt_dox_cntrl) <- c("timepoint", "mfi_tdt_ode")
 #### PLOTS
-s_m = T # set to true to include simulation with optimal shift (=memory)
 
-##### Figure 5D
-# MFI GFP
+##### Figure 6
+# MFI GFP 2i
 mfi_gfp_2i_sp505<-stats_total%>% 
   dplyr::filter(inicond != "Neg") %>%
-  filter(timepoint<=96 & cellstate=="2i" & plasmid=="SP505") %>% 
+  filter(timepoint<=96 & cellstate=="2i" & plasmid=="SP505" & c1=="0ngDox") %>% 
   ggplot()+
   geom_point(aes(x=timepoint, y=log10(mfi_gfp),color=inicond, shape=inicond),size = 1, alpha = 2/3)+ 
-  geom_line(data=mean_reps %>% filter(timepoint<=96& cellstate=="2i" & plasmid=="SP505"),aes(x=timepoint, y=log10(mfi_gfp_rep),color=inicond))+
+  #geom_line(data=mean_reps %>% filter(timepoint<=96& cellstate=="2i" & plasmid=="SP505"& c1=="0ngDox"),aes(x=timepoint, y=log10(mfi_gfp_rep),color=inicond))+
   # Add simulated GFP kinetics with optimal shift = memory (least ssqr)
-  {if(s_m)geom_line(data=gfp_ode_memory %>% filter(cellstate=="2i"&plasmid=="SP505"),aes(x=timepoint, y=log10(mfi_gfp_ode)),colour="black",size = 0.5,linetype = 1)}+
+  geom_line(data=sim_esc_gfp_ini2, aes(x=timepoint, y=log10(mfi_gfp_ode)),colour="#1B9D8E",size = 0.5,linetype = 1) +
+  geom_line(data=sim_esc_gfp_ini2_wo_delay, aes(x=timepoint, y=log10(mfi_gfp_ode)),colour="#1B9D8E",size = 0.5,linetype = 3) +
+  geom_line(data=sim_esc_gfp_ini1, aes(x=timepoint, y=log10(mfi_gfp_ode)),colour="gray60",size = 0.5,linetype = 1) +
   # plot statistical test for difference between 2 initial conditions
-  geom_text(data=sel.stat%>% filter(timepoint<=96& cellstate=="2i"& plasmid=="SP505"),aes(x=timepoint,y=y_gfp_2i, label=lab_gfp), size=5, color='black')  +
-  scale_fill_manual(values=c("#1B9D8E", "#94C3BA"))+
+  geom_text(data=sel.stat%>% filter(timepoint<=96& cellstate=="2i"& plasmid=="SP505"& c1=="0ngDox"),aes(x=timepoint,y=y_gfp_2i, label=lab_gfp), size=5, color='black')  +
+  scale_fill_manual(values=c("gray60", "#1B9D8E"))+
   scale_shape_manual(values = c(16,17,18)) + # Customize point symbols
-  scale_color_manual(values=c("#1B9D8E", "#94C3BA"))+
+  scale_color_manual(values=c("gray60", "#1B9D8E"))+
   scale_x_continuous(breaks=c(0,8,24,48,72,96), labels=c(0,0.33,1,2,3,4), expand = c(0, 0), limits=c(-4,100))+
-  scale_y_continuous(limits=c(2.5,3.75),breaks=c(2.5, 2.75,3,3.25,3.5,3.75), name='MFI GFP [log10]') +
-  facet_wrap(cellstate~factor(c1,levels=c("0ngDox","200ngDox",
-                                          "400ngDox", "2000ngDox")),ncol=4)
-fix_mfi_gfp_2i_sp505 <- set_panel_size(mfi_gfp_2i_sp505, height = unit(2, "cm"), width = unit(1.5, "cm"))
+  scale_y_continuous(limits=c(2.5,3.75),breaks=c(2.5, 2.75,3,3.25,3.5,3.75), name='MFI GFP [log10]')
+fix_mfi_gfp_2i_sp505 <- set_panel_size(mfi_gfp_2i_sp505, height = unit(3, "cm"), width = unit(4, "cm"))
 
-# MFI tdTomato
+# MFI tdTomato 2i
 mfi_tdt_2i_sp505<-stats_total%>% 
   dplyr::filter(inicond != "Neg") %>%
-  filter(timepoint<=96 & cellstate=="2i" & plasmid=="SP505") %>% 
+  filter(timepoint<=96 & cellstate=="2i" & plasmid=="SP505" & c1=="0ngDox") %>% 
   ggplot()+
   geom_point(aes(x=timepoint, y=log10(mfi_tdt), color=inicond, shape=inicond),size = 1, alpha = 2/3)+ 
-  geom_line(data=mean_reps %>% filter(timepoint<=96& cellstate=="2i"& plasmid=="SP505"),aes(x=timepoint, y=log10(mfi_tdt_rep),color=inicond))+
+  #geom_line(data=mean_reps %>% filter(timepoint<=96& cellstate=="2i"& plasmid=="SP505"& c1=="0ngDox"),aes(x=timepoint, y=log10(mfi_tdt_rep),color=inicond))+
   # Add simulated tdt kinetics
-  {if(s_m)geom_line(data=tdt_ode_memory %>% filter(cellstate=="2i"&plasmid=="SP505"),aes(x=timepoint, y=log10(mfi_tdt_ode)),colour="black",size = 0.5,linetype = 1)}+ 
-  geom_text(data=sel.stat%>% filter(timepoint<=96& cellstate=="2i"& plasmid=="SP505"),aes(x=timepoint,y=y_tdt_2i, label=lab_tdt), size=5, color='black')  +
-  scale_fill_manual(values=c("#EB6D1E", "#F5AC76"))+
+  geom_line(data=sim_esc_tdt_ini2, aes(x=timepoint, y=log10(mfi_tdt_ode)),colour="#EB6D1E",size = 0.5,linetype = 1) +
+  geom_line(data=sim_esc_tdt_ini2_wo_delay, aes(x=timepoint, y=log10(mfi_tdt_ode)),colour="#EB6D1E",size = 0.5,linetype = 3) +  
+  geom_text(data=sel.stat%>% filter(timepoint<=96& cellstate=="2i"& plasmid=="SP505"& c1=="0ngDox"),aes(x=timepoint,y=y_tdt_2i, label=lab_tdt), size=5, color='black')  +
+  geom_line(data=sim_esc_tdt_ini1, aes(x=timepoint, y=log10(mfi_tdt_ode)),colour="gray60",size = 0.5,linetype = 1) +
+  scale_fill_manual(values=c("gray60", "#EB6D1E"))+
   scale_shape_manual(values = c(16,17)) +
-  scale_color_manual(values=c("#EB6D1E", "#F5AC76"))+
+  scale_color_manual(values=c("gray60", "#EB6D1E"))+
   scale_x_continuous(breaks=c(0,8,24,48,72,96), labels=c(0,0.33,1,2,3,4), expand = c(0, 0), limits=c(-4,100))+
-  scale_y_continuous(limits=c(-1,4.75),breaks=c((2.5)-1,0,1,2,3,4), name='MFI tdT [log10]') +
-  facet_wrap(cellstate~factor(c1,levels=c("0ngDox","200ngDox",
-                                          "400ngDox", "2000ngDox")),ncol=4)
-fix_mfi_tdt_2i_sp505<- set_panel_size(mfi_tdt_2i_sp505, height = unit(2, "cm"), width = unit(1.5, "cm"))
+  scale_y_continuous(limits=c(-1,4.75),breaks=c((2.5)-1,0,1,2,3,4), name='MFI tdT [log10]') 
+fix_mfi_tdt_2i_sp505<- set_panel_size(mfi_tdt_2i_sp505, height = unit(3, "cm"), width = unit(4, "cm"))
 
-fig5d<-grid.arrange(fix_mfi_gfp_2i_sp505,fix_mfi_tdt_2i_sp505)
-ggsave(path = output_dir, "Fig5d.pdf", fig5d, dpi = 300,
+fig6d<-grid.arrange(fix_mfi_gfp_2i_sp505,fix_mfi_tdt_2i_sp505)
+ggsave(path = output_dir, "Fig6d.pdf", fig6d, dpi = 300,
        useDingbats=FALSE)
 
-#### Figure 5E
-#MFI GFP
+#MFI GFP diff
 mfi_gfp_lifw_sp505<-stats_total%>% 
   dplyr::filter(inicond != "Neg") %>%
-  filter(timepoint<=96 & cellstate=="LIFw" & plasmid=="SP505") %>% 
+  filter(timepoint<=96 & cellstate=="LIFw" & plasmid=="SP505" & c1=="0ngDox") %>% 
   ggplot()+
   geom_point(aes(x=timepoint, y=log10(mfi_gfp),color=inicond, shape=inicond),size = 1, alpha = 2/3)+ 
-  geom_line(data=mean_reps %>% filter(timepoint<=96& cellstate=="LIFw" & plasmid=="SP505"),aes(x=timepoint, y=log10(mfi_gfp_rep),color=inicond))+
+  #geom_line(data=mean_reps %>% filter(timepoint<=96& cellstate=="LIFw" & plasmid=="SP505"& c1=="0ngDox"),aes(x=timepoint, y=log10(mfi_gfp_rep),color=inicond))+
   # Add simulated GFP kinetics
-  {if(s_m)geom_line(data=gfp_ode_memory %>% filter(cellstate=="LIFw"&plasmid=="SP505"),aes(x=timepoint, y=log10(mfi_gfp_ode)),colour="grey",size = 0.5,linetype = 1)}+ 
-   geom_text(data=sel.stat%>% filter(timepoint<=96& cellstate=="LIFw"& plasmid=="SP505"),aes(x=timepoint,y=y_gfp_lifw, label=lab_gfp), size=5, color='black')  +
-  scale_fill_manual(values=c("#1B9D8E", "#94C3BA"))+
+  geom_line(data=sim_diff_gfp_ini2, aes(x=timepoint, y=log10(mfi_gfp_ode)),colour="#1B9D8E",size = 0.5,linetype = 1) +
+  geom_line(data=sim_diff_gfp_ini2_wo_delay, aes(x=timepoint, y=log10(mfi_gfp_ode)),colour="#1B9D8E",size = 0.5,linetype = 3) +  
+  geom_line(data=sim_diff_gfp_ini1, aes(x=timepoint, y=log10(mfi_gfp_ode)),colour="gray60",size = 0.5,linetype = 1) +
+  geom_text(data=sel.stat%>% filter(timepoint<=96& cellstate=="LIFw"& plasmid=="SP505"& c1=="0ngDox"),aes(x=timepoint,y=y_gfp_lifw, label=lab_gfp), size=5, color='black')  +
+  scale_fill_manual(values=c("gray60", "#1B9D8E"))+
   scale_shape_manual(values = c(16,17)) +
-  scale_color_manual(values=c("#1B9D8E", "#94C3BA"))+ 
+  scale_color_manual(values=c("gray60", "#1B9D8E"))+ 
   scale_x_continuous(breaks=c(0,8,24,48,72,96), labels=c(0,0.33,1,2,3,4), expand = c(0, 0), limits=c(-4,100))+
-  scale_y_continuous(limits=c(1.75,4.35),breaks=c(2,2.5,3,3.5,4), name='MFI GFP [log10]') +
-  facet_wrap(cellstate~factor(c1,levels=c("0ngDox","200ngDox",
-                                          "400ngDox", "2000ngDox")),ncol=4)
-fix_mfi_gfp_lifw_sp505 <- set_panel_size(mfi_gfp_lifw_sp505, height = unit(2, "cm"), width = unit(1.5, "cm"))
+  scale_y_continuous(limits=c(1.75,4.35),breaks=c(2,2.5,3,3.5,4), name='MFI GFP [log10]') 
+fix_mfi_gfp_lifw_sp505 <- set_panel_size(mfi_gfp_lifw_sp505, height = unit(3, "cm"), width = unit(4, "cm"))
 
-#MFI tdT
+#MFI tdT diff
 mfi_tdt_lifw_sp505<-stats_total%>% 
   dplyr::filter(inicond != "Neg") %>%
-  filter(timepoint<=96 & cellstate=="LIFw" & plasmid=="SP505") %>% 
+  filter(timepoint<=96 & cellstate=="LIFw" & plasmid=="SP505" & c1=="0ngDox") %>% 
   ggplot()+
   geom_point(aes(x=timepoint, y=log10(mfi_tdt),color=inicond, shape=inicond),size = 1, alpha = 2/3)+
-  geom_line(data=mean_reps %>% filter(timepoint<=96& cellstate=="LIFw"& plasmid=="SP505"),aes(x=timepoint, y=log10(mfi_tdt_rep),color=inicond))+
+  geom_text(data=sel.stat%>% filter(timepoint<=96& cellstate=="LIFw"& plasmid=="SP505"& c1=="0ngDox"),aes(x=timepoint,y=y_tdt_lifw, label=lab_tdt), size=5, color='black')  +
   # Add simulated tdt kinetics
-  {if(s_m)geom_line(data=tdt_ode_memory %>% filter(cellstate=="LIFw"&plasmid=="SP505"),aes(x=timepoint, y=log10(mfi_tdt_ode)),colour="grey",size = 0.5,linetype = 1)}+ 
-  geom_text(data=sel.stat%>% filter(timepoint<=96& cellstate=="LIFw"& plasmid=="SP505"),aes(x=timepoint,y=y_tdt_lifw, label=lab_tdt), size=5, color='black')  +
-  geom_text(data=sel.stat%>% filter(timepoint<=96& cellstate=="LIFw"& plasmid=="SP505"),aes(x=timepoint,y=y_tdt_lifw, label=lab_tdt), size=5, color='black')  +
-  scale_fill_manual(values=c("#EB6D1E", "#F5AC76"))+
+  geom_line(data=sim_diff_tdt_ini2, aes(x=timepoint, y=log10(mfi_tdt_ode)),colour="#EB6D1E",size = 0.5,linetype = 1) +
+  geom_line(data=sim_diff_tdt_ini2_wo_delay, aes(x=timepoint, y=log10(mfi_tdt_ode)),colour="#EB6D1E",size = 0.5,linetype = 3) +  
+  geom_line(data=sim_diff_tdt_ini1, aes(x=timepoint, y=log10(mfi_tdt_ode)),colour="gray60",size = 0.5,linetype = 1) +
+  scale_fill_manual(values=c("gray60", "#EB6D1E"))+
   scale_shape_manual(values = c(16,17)) +
-  scale_color_manual(values=c("#EB6D1E", "#F5AC76"))+
+  scale_color_manual(values=c("gray60", "#EB6D1E"))+
   scale_x_continuous(breaks=c(0,8,24,48,72,96), labels=c(0,0.33,1,2,3,4), expand = c(0, 0), limits=c(-4,100))+
-  scale_y_continuous(limits=c(0.5,5.5),breaks=c(1,2,3,4,5), name='MFI tdT [log10]') +
-  facet_wrap(cellstate~factor(c1,levels=c("0ngDox","200ngDox",
-                                          "400ngDox", "2000ngDox")),ncol=4)
-fix_mfi_tdt_lifw_sp505 <- set_panel_size(mfi_tdt_lifw_sp505, height = unit(2, "cm"), width = unit(1.5, "cm"))
+  scale_y_continuous(limits=c(0.5,5.5),breaks=c(1,2,3,4,5), name='MFI tdT [log10]') 
+fix_mfi_tdt_lifw_sp505 <- set_panel_size(mfi_tdt_lifw_sp505, height = unit(3, "cm"), width = unit(4, "cm"))
 
-fig5e<-grid.arrange(fix_mfi_gfp_lifw_sp505,fix_mfi_tdt_lifw_sp505)
-ggsave(path = output_dir, "Fig5e.pdf", fig5e, dpi = 300,
+fig6e<-grid.arrange(fix_mfi_gfp_lifw_sp505,fix_mfi_tdt_lifw_sp505)
+ggsave(path = output_dir, "Fig6E.pdf", fig6e, dpi = 300,
        useDingbats=FALSE)
 
 
-# Delta MFI GFP
-delta_mfi_plot_log <- diff_inis %>% 
-  filter(timepoint<=96 & plasmid=="SP505") %>% 
-  filter(cellstate!="2i-LIFw") %>% 
+###### Supplementary Figure 5
+# Plot control data 
+# MFI tdTomato 2i
+dox_cntrl_0h <- stats_total%>% filter(inicond == "Ini2-highDox"& timepoint==0 & cellstate=="2i" & plasmid=="SP505" & c1=="2000ngDox")
+mfi_tdt_2i_sp505_cntrl<-stats_total%>% 
+  dplyr::filter(inicond == "Ini2-highDox") %>%
+  filter(timepoint<=96 & cellstate=="2i" & plasmid=="SP505" & c1=="2000ngDox") %>% 
   ggplot()+
-  geom_point(aes(x=timepoint, y=(mfi_gfp_diff_log),color=factor(c1,levels=c("0ngDox","200ngDox",
-  "400ngDox", "2000ngDox"))),pch=16,size = 1, alpha = 2/3)+
-  geom_line(data=mean_diff_inis %>% filter(timepoint<=96&cellstate!="2i-LIFw"& plasmid=="SP505"),aes(x=timepoint, y=(mfi_gfp_diff_log_rep),
-  color=factor(c1,levels=c("0ngDox","200ngDox","400ngDox", "2000ngDox"))))+  scale_fill_manual(values = brewer.pal(4, "Blues")) +
-  scale_color_manual(values = brewer.pal(4, "Blues")) +
+  geom_point(aes(x=timepoint, y=log10(mfi_tdt), color=inicond, shape=inicond),size = 1, alpha = 2/3)+
+  geom_hline(yintercept=log10(mean(dox_cntrl_0h$mfi_tdt)),colour="#EB6D1E",size = 0.5,linetype = 1) +
+  scale_fill_manual(values=c("#EB6D1E"))+
+  scale_shape_manual(values = c(16,17)) +
+  scale_color_manual(values=c("#EB6D1E"))+
   scale_x_continuous(breaks=c(0,8,24,48,72,96), labels=c(0,0.33,1,2,3,4), expand = c(0, 0), limits=c(-4,100))+
-  facet_wrap(~cellstate,ncol=4)+
-  ylab("Delta log10(MFI GFP)")
-fix1 <- set_panel_size(delta_mfi_plot_log, height = unit(2, "cm"), width = unit(1.5, "cm"))
-ggsave(path = output_dir, "Fig5de_Delta_MFI_GFP.pdf", fix1, dpi = 300,
-       useDingbats=FALSE)
+  scale_y_continuous(limits=c(-1,4.75),breaks=c((2.5)-1,0,1,2,3,4), name='MFI tdT [log10]') 
+fix_mfi_tdt_2i_sp505_cntrl<- set_panel_size(mfi_tdt_2i_sp505_cntrl, height = unit(3, "cm"), width = unit(4, "cm"))
 
-# Delta MFI tdt
-delta_mfi_plot_tdt_log <- diff_inis_tdt %>% 
-  filter(timepoint<=96& plasmid=="SP505") %>% 
-  filter(cellstate!="2i-LIFw") %>% 
+mfi_tdt_lifw_sp505_cntrl<-stats_total%>% 
+  dplyr::filter(inicond == "Ini2-highDox") %>%
+  filter(timepoint<=96 & cellstate=="LIFw" & plasmid=="SP505" & c1=="2000ngDox") %>% 
   ggplot()+
-  geom_point(aes(x=timepoint, y=(mfi_tdt_diff_log),color=factor(c1,levels=c("0ngDox","200ngDox","400ngDox", "2000ngDox"))),pch=16,size = 1, alpha = 2/3)+
-  geom_line(data=mean_diff_inis_tdt %>% filter(timepoint<=96&cellstate!="2i-LIFw"& plasmid=="SP505"),aes(x=timepoint, y=(mfi_tdt_diff_log_rep),
-  color=factor(c1,levels=c("0ngDox","200ngDox","400ngDox", "2000ngDox"))))+
-  scale_fill_manual(values = brewer.pal(4, "Blues")) +
-  scale_color_manual(values = brewer.pal(4, "Blues")) +
+  geom_point(aes(x=timepoint, y=log10(mfi_tdt),color=inicond, shape=inicond),size = 1, alpha = 2/3)+
+  geom_line(data=sim_diff_tdt_dox_cntrl, aes(x=timepoint, y=log10(mfi_tdt_ode)),colour="#EB6D1E",size = 0.5,linetype = 1) +
+  scale_fill_manual(values=c("#EB6D1E"))+
+  scale_shape_manual(values = c(16,17)) +
+  scale_color_manual(values=c("#EB6D1E"))+
   scale_x_continuous(breaks=c(0,8,24,48,72,96), labels=c(0,0.33,1,2,3,4), expand = c(0, 0), limits=c(-4,100))+
-  facet_wrap(~cellstate,ncol=4)+
-  ylab("Delta log10(MFI tdT)")
-fix1 <- set_panel_size(delta_mfi_plot_tdt_log, height = unit(2, "cm"), width = unit(1.5, "cm"))
-ggsave(path = output_dir, "Fig5de_Delta_MFI_tdT.pdf", fix1, dpi = 300,
+  scale_y_continuous(limits=c(0.5,5.5),breaks=c(1,2,3,4,5), name='MFI tdT [log10]') 
+fix_mfi_tdt_lifw_sp505_cntrl <- set_panel_size(mfi_tdt_lifw_sp505_cntrl, height = unit(3, "cm"), width = unit(4, "cm"))
+
+figs5h<-grid.arrange(fix_mfi_tdt_2i_sp505_cntrl,fix_mfi_tdt_lifw_sp505_cntrl)
+ggsave(path = output_dir, "FigS5H.pdf", figs5h, dpi = 300,
        useDingbats=FALSE)
 
+#Anticorrelation GFP and tdT across dox treatments 
+mean_dox_ini1 <- stats %>%
+  filter(inicond == "Ini1-noDox") %>%
+  filter((timepoint==72) & cellstate=="2i" & plasmid=="SP505") %>%
+  group_by(c1,inicond) %>% summarise(mean_gfp = mean(log10(mfi_gfp)), mean_tdt = mean(log10(mfi_tdt)), sd_gfp = sd(log10(mfi_gfp)),
+                                     sd_tdt = sd(log10(mfi_gfp)))
+scatter_2i_stats <- mean_dox_ini1 %>% 
+  ggplot() +
+  geom_point(aes(x =(mean_tdt),y =(mean_gfp),color=c1)) +
+  geom_errorbar(aes(x =(mean_tdt),y =(mean_gfp), ymin = mean_gfp - sd_gfp, ymax = mean_gfp + sd_gfp), width = 0.05) +  # Y error bars
+  geom_errorbarh(aes(y =(mean_gfp), xmin = mean_tdt - sd_tdt, xmax = mean_tdt + sd_tdt), height = 0.05) +
+  labs(x="log10(mean_tdt)",y="log10(mean_gfp)")
+fix1 <- set_panel_size(scatter_2i_stats, height = unit(3, "cm"), width = unit(2.25, "cm"))
+
+# Scatter of tdT vs GFP
+# Adapt flow dataframe
+flow_df3<-flow_df2 %>%
+  filter(inicond != "Neg") %>%
+  filter(replicate != "R6") %>% #too few cells
+  mutate(timepoint=DigitSum(as.numeric(str_remove_all(timepoint,"[-dh]")))) %>% 
+  mutate(timepoint= replace(timepoint, timepoint == 6, 24)) %>%
+  mutate(timepoint= replace(timepoint, timepoint == 12, 48)) %>%
+  mutate(timepoint= replace(timepoint, timepoint == 9, 72)) %>% 
+  mutate(timepoint= replace(timepoint, timepoint == 15, 96)) %>% 
+  mutate(timepoint= replace(timepoint, timepoint == 3, 120)) %>% 
+  mutate(replicate= replace(replicate, replicate == "R4" & plasmid=="SP538", "R1")) %>% 
+  mutate(replicate= replace(replicate, replicate == "R5" & plasmid=="SP538", "R2")) 
+
+scatter_2i_ini1 <- flow_df3 %>% 
+  dplyr::filter(inicond == "Ini1-noDox") %>%
+  filter(timepoint==48 & cellstate=="2i" & plasmid=="SP505") %>% 
+  sample_n(1000) %>% #slice_sample(prop = 0.1)
+  filter(GFP>mean(stats_neg$mfi_gfp_neg)) %>%
+  filter(tdT>mean(stats_neg$mfi_tdt_neg)) %>%
+  ggplot() +
+  geom_point(aes(x = log10(tdT),y = log10(GFP),alpha=0.001,
+                 color = factor(c1,levels=c("0ngDox","200ngDox","400ngDox", "2000ngDox"))), size = 0.75) +
+  geom_smooth(aes(x = log10(tdT),y = log10(GFP)),method = "lm", se = TRUE, color = "black", linetype=2, size = 0.25)  # regression line
+fix2 <- set_panel_size(scatter_2i_ini1, height = unit(2.25, "cm"), width = unit(2.25, "cm"))
+
+fix<-grid.arrange(fix1,fix2) 
+ggsave(path = output_dir,"FigS5A.pdf", fix, width = 6, height = 12, units = "cm", dpi = 300,useDingbats=FALSE)
