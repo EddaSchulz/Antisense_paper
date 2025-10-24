@@ -103,6 +103,9 @@ fig_dir=${work_dir}figures/
 echo -e "Plotting TSS sources and number"
 Rscript ${script_dir}plot_tss_source.R $files_dir $fig_dir
 
+echo -e "Annotating detected transcripts"
+Rscript ${script_dir}annot_transcripts.R $files_dir $fig_dir
+
 echo -e "Finding overlaps and plotting basic statistics"
 for day in d0 d2 d4
 do
@@ -110,9 +113,17 @@ do
   Rscript ${script_dir}desc_overlaps.R $day $bam_dir $overlaps_dir $files_dir $count_dir
 done
 
+echo -e "Plotting overlap stats and types"
 Rscript ${script_dir}plot_overlap_stats.R $overlaps_dir $count_dir $fig_dir
+Rscript ${script_dir}cat_overlaps.R $overlaps_dir $files_dir $fig_dir
 
-echo -e "Create control sets, make computeMatrix BEDs and plot stats"
+echo -e "Performing GO-Term enrichment for overlap genes"
+Rscript ${script_dir}goterm_overlaps.R $overlaps_dir $fig_dir
+
+echo -e "Plotting strad bias"
+Rscript ${script_dir} $overlaps_dir $fig_dir
+
+echo -e "Creating control sets, make computeMatrix BEDs and plot stats"
 for day in d0 d4
 do
   Rscript ${script_dir}make_computeMatrix_bed.R $files_dir $overlaps_dir $count_dir $data_dir $day
@@ -128,11 +139,11 @@ do
   Rscript ${script_dir}plot_linegraph_3prime_overlap_antisense.R $data_dir $count_dir $fig_dir $day
 done
 
-echo -e "Calculate CnT enrichment around promoters"
+echo -e "Calculating CnT enrichment around promoters"
 Rscript ${script_dir}cnt_lfc_heatmaps.R $data_dir $bam_dir $fig_dir
 
 
-echo -e "Calculate and plot methylation around promoters"
+echo -e "Calculating and plotting methylation around promoters"
 Rscript ${script_dir}plot_BSseq.R $bs_dir $data_dir $fig_dir
 
 
