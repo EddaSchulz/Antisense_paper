@@ -55,7 +55,7 @@ stat_violin_tpm <- stats_df %>%
   scale_fill_manual(values = c("#3F2D87", "#777777", "#F7A539", "#777777")) +
   scale_y_continuous(limits = c(-2, 10), breaks = c(0, 5, 10))
 
-pdf(paste0(fig_dir, "Fig4B_S2C_", day, "_mock_control_expression.pdf"), useDingbats = FALSE, onefile = FALSE)
+pdf(paste0(fig_dir, "Fig5B_S4C_", day, "_mock_control_expression.pdf"), useDingbats = FALSE, onefile = FALSE)
 fix <- set_panel_size(stat_violin_tpm, width = unit(2, "cm"), height = unit(2, "cm"))
 
 print(grid.arrange(fix))
@@ -75,7 +75,7 @@ stat_violin_len <- stats_df %>%
   scale_fill_manual(values = c("#3F2D87", "#777777", "#F7A539", "#777777")) +
   scale_y_continuous(limits = c(2.5, 5.5), breaks = c(3, 4, 5))
 
-pdf(paste0(fig_dir, "FigS2A-B_", day, "_mock_control_length.pdf"), useDingbats = FALSE, onefile = FALSE)
+pdf(paste0(fig_dir, "FigS4A-B_", day, "_mock_control_length.pdf"), useDingbats = FALSE, onefile = FALSE)
 fix <- set_panel_size(stat_violin_len, width = unit(1, "cm"), height = unit(2, "cm"))
 
 print(grid.arrange(fix))
