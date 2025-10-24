@@ -1,7 +1,7 @@
 # Analyze Overlaps
 
 ## Description
-This folder contains all code that was used to generate figure for the genome-wide antisense transcription analysis in Mutzel et al., 2024 
+This folder contains all code that was used to generate figure for the genome-wide antisense transcription analysis in Mutzel et al., 2025 
 
 ## Software dependencies and operating systems
 In order to perform these analyses, the following software has to be installed and available on the command line ($PATH):
