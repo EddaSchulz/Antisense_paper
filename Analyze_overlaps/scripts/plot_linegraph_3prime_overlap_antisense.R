@@ -99,7 +99,7 @@ plot_overlap_as <- computeMatrix_3prime %>%
   scale_color_manual(values = c("#3F2D87", "#777777"), labels = c("3'-Overlap", "No Overlaps")) +
   scale_fill_manual(values = c("#3F2D87", "#777777"), labels = c("3'-Overlap", "No Overlaps"))
 
-pdf(paste0(fig_dir, "Fig3C_S2D_XX_", day, "_3prime_line_overlap_as.pdf"), useDingbats = FALSE, onefile = FALSE)
+pdf(paste0(fig_dir, "Fig5C_S4D_XX_", day, "_3prime_line_overlap_as.pdf"), useDingbats = FALSE, onefile = FALSE)
 fix <- set_panel_size(plot_overlap_as, width = unit(3, "cm"), height = unit(2, "cm"))
 
 print(grid.arrange(fix))
