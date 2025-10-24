@@ -105,7 +105,7 @@ plot_annot <- out_df %>%
   scale_fill_viridis(discrete = TRUE, option = "C", begin = 0.1, end = 0.9)
 
 
-pdf(paste0(output_dir, "S2E_TU_types_bar.pdf"), useDingbats = FALSE, onefile = FALSE)
+pdf(paste0(output_dir, "FigS2E_TU_types_bar.pdf"), useDingbats = FALSE, onefile = FALSE)
 fix <- set_panel_size(plot_annot, width = unit(2.5, "cm"), height = unit(2, "cm"))
 
 print(grid.arrange(fix))
