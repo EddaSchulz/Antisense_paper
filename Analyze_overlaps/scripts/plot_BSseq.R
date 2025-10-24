@@ -115,7 +115,7 @@ meth_viol_3prime <- meth_total %>%
 
 fix <- set_panel_size(meth_viol_3prime, height = unit(2, "cm"), width = unit(2, "cm"))
 grid.arrange(fix)
-ggsave("Fig4F_d0_matched_meth_violin_3prime.pdf", fix, dpi = 300,
+ggsave("Fig5F_d0_matched_meth_violin_3prime.pdf", fix, dpi = 300,
        useDingbats=FALSE)
 
 meth_viol_5prime <- meth_total %>%
@@ -127,5 +127,5 @@ meth_viol_5prime <- meth_total %>%
 
 fix <- set_panel_size(meth_viol_5prime, height = unit(2, "cm"), width = unit(2, "cm"))
 grid.arrange(fix)
-ggsave("Fig4F_d0_matched_meth_violin_5prime.pdf", fix, dpi = 300,
+ggsave("Fig5F_d0_matched_meth_violin_5prime.pdf", fix, dpi = 300,
        useDingbats=FALSE)
