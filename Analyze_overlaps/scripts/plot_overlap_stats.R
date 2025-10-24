@@ -62,7 +62,7 @@ ratio_day <- overlap_all %>%
   scale_fill_viridis_d(option = "plasma", begin = 0.1, end = 0.8)+
   labs(y = "Overlap Ratio [Plus / Total]")
 
-pdf(paste0(fig_dir, "FigS1F_overlap_strand_ratios.pdf"), useDingbats = FALSE, onefile = FALSE)
+pdf(paste0(fig_dir, "FigS3B_overlap_strand_ratios.pdf"), useDingbats = FALSE, onefile = FALSE)
 fix <- set_panel_size(ratio_day, width = unit(2, "cm"), height = unit(2, "cm"))
 
 print(grid.arrange(fix))
@@ -79,7 +79,7 @@ overlap_num_day <- overlap_all %>%
   scale_fill_viridis_d(option = "plasma", begin = 0.1, end = 0.8) +
   labs(y = "Number of Overlaps")
 
-pdf(paste0(fig_dir, "Fig3D_overlap_num.pdf"), useDingbats = FALSE, onefile = FALSE)
+pdf(paste0(fig_dir, "Fig4D_overlap_num.pdf"), useDingbats = FALSE, onefile = FALSE)
 fix <- set_panel_size(overlap_num_day, width = unit(2, "cm"), height = unit(2, "cm"))
 
 print(grid.arrange(fix))
@@ -100,7 +100,7 @@ overlap_length_day <- overlap_all %>%
                    fun=mean, geom="text", size=6/2.8) +
   scale_y_continuous(breaks = c(3,4,5))
 
-pdf(paste0(fig_dir, "FigS1E_overlap_length.pdf"), useDingbats = FALSE, onefile = FALSE)
+pdf(paste0(fig_dir, "FigS2F_overlap_length.pdf"), useDingbats = FALSE, onefile = FALSE)
 fix <- set_panel_size(overlap_length_day, width = unit(2, "cm"), height = unit(2, "cm"))
 
 print(grid.arrange(fix))
