@@ -1,7 +1,7 @@
 # Antisense Model
 
 ## Description
-This folder contains all code that was used to perform and analyze the simulations of the antisense model in Mutzel et al., 2024 
+This folder contains all code that was used to perform and analyze the simulations of the antisense model in Mutzel et al., 2025 
 
 1. *simulations* contains the FST files of the full model and all model simplifications, as well as the bursting and mitosis simulations (under revision).
 2. *scripts* contains all code that was used to generate parameter sets, perform and summarize the simulations
