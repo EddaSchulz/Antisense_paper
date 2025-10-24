@@ -113,7 +113,7 @@ ratio_day <- ratio_overlaps %>%
   scale_fill_viridis_d(option = "plasma", begin = 0.1, end = 0.8)+
   labs(y = "Overlap Ratio [Plus / Total]")
 
-pdf(paste0(fig_dir, "Fig3F_composite_overlap_strand_ratios.pdf"), useDingbats = FALSE, onefile = FALSE)
+pdf(paste0(fig_dir, "Fig4F_composite_overlap_strand_ratios.pdf"), useDingbats = FALSE, onefile = FALSE)
 fix <- set_panel_size(ratio_day, width = unit(2, "cm"), height = unit(2, "cm"))
 
 print(grid.arrange(fix))
@@ -178,7 +178,7 @@ for (ol in  ol_types)
     geom_sankey_text(size = 6/2.8) +
     theme_sankey(base_size = 6)
 
-  pdf(paste0(fig_dir, "Fig_3GIK_d4_composite_overlaps_sankey_", ol, ".pdf"), useDingbats = FALSE, onefile = FALSE)
+  pdf(paste0(fig_dir, "Fig_4GIK_d4_composite_overlaps_sankey_", ol, ".pdf"), useDingbats = FALSE, onefile = FALSE)
 
   fix <- set_panel_size(sankey, width = unit(3, "cm"), height = unit(4, "cm"))
 
@@ -208,7 +208,7 @@ ratio_density_area_d4 <- switch_df %>%
 
 
 
-pdf(paste0(fig_dir, "Fig3GIK_d4_overlap_ratio_area.pdf"), useDingbats = FALSE, onefile = FALSE)
+pdf(paste0(fig_dir, "Fig4GIK_d4_overlap_ratio_area.pdf"), useDingbats = FALSE, onefile = FALSE)
 
 fix <- set_panel_size(ratio_density_area_d4, width = unit(2, "cm"), height = unit(2, "cm"))
 
@@ -227,7 +227,7 @@ ratio_density_area_d2 <- switch_df %>%
 
 
 
-pdf(paste0(fig_dir, "FigS2G-I_d2_overlap_ratio_area.pdf"), useDingbats = FALSE, onefile = FALSE)
+pdf(paste0(fig_dir, "FigS3D-F_d2_overlap_ratio_area.pdf"), useDingbats = FALSE, onefile = FALSE)
 
 fix <- set_panel_size(ratio_density_area_d2, width = unit(2, "cm"), height = unit(2, "cm"))
 
