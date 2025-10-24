@@ -69,7 +69,7 @@ for (day in c("d0", "d2", "d4")){
 plot_df <- upset_df %>% 
   filter(id == day)
   
-pdf(file = paste0("FigS1A-C_", day, "_upsetR_trans_sources.pdf"), onefile = FALSE, height = unit(3, 'cm'), width = unit(4, 'cm')
+pdf(file = paste0("FigS2A-C_", day, "_upsetR_trans_sources.pdf"), onefile = FALSE, height = unit(3, 'cm'), width = unit(4, 'cm')
     ,useDingbats = FALSE)
 
 print(upset(plot_df, order.by = "freq"))
