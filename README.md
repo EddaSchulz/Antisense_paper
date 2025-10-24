@@ -1,7 +1,7 @@
 # Antisense transcription can induce expression memory via stable promoter repression
 Verena Mutzel, Till Schwämmle, Svearike Oeverdieck, Lucia Librenjak, Benedikt Boesen, Melissa Bothe, Rutger A.F. Gjaltema, Ilona Dunkel, Gemma Noviello and Edda G. Schulz 
 
-Data and code used to perform computational analyses in [Mutzel et al., 2024, *bioRxiv*](https://www.biorxiv.org/content/10.1101/2024.03.06.583761v1).
+Data and code used to perform computational analyses in Mutzel et al. 2025, _Genome Biology_.
 
 
 ## Abstract
