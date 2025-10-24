@@ -53,7 +53,7 @@ source_barplot <- total_sources %>%
                       labels = c("Novel", "GENCODE"))
 
 
-pdf("Fig3B_TSS_number.pdf", useDingbats = FALSE, onefile = FALSE)
+pdf("Fig4B_TSS_number.pdf", useDingbats = FALSE, onefile = FALSE)
 fix <- set_panel_size(source_barplot, width = unit(2.5, "cm"), height = unit(2, "cm"))
 
 print(grid.arrange(fix))
