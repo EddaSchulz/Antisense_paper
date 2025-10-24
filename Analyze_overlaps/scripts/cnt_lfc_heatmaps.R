@@ -206,7 +206,7 @@ lfc_map_3prime <- lfc_df %>%
   scale_y_discrete(expand = c(0, 0)) +
   labs(fill = "Mean LFC (Case/Control)")
 
-pdf(paste0(fig_dir, "Fig4D_CnT_3prime_lfc.pdf"), useDingbats = FALSE, onefile = FALSE)
+pdf(paste0(fig_dir, "Fig5D_CnT_3prime_lfc.pdf"), useDingbats = FALSE, onefile = FALSE)
 fix <- set_panel_size(lfc_map_3prime, width = unit(0.85714285714, "cm"), height = unit(2, "cm"))
 
 print(grid.arrange(fix))
@@ -225,7 +225,7 @@ lfc_map_5prime <- lfc_df %>%
   scale_y_discrete(expand = c(0, 0)) +
   labs(fill = "Mean LFC (Case/Control)")
 
-pdf(paste0(fig_dir, "Fig4E_CnT_5prime_lfc.pdf"), useDingbats = FALSE, onefile = FALSE)
+pdf(paste0(fig_dir, "Fig5E_CnT_5prime_lfc.pdf"), useDingbats = FALSE, onefile = FALSE)
 fix <- set_panel_size(lfc_map_5prime, width = unit(0.85714285714, "cm"), height = unit(2, "cm"))
 
 print(grid.arrange(fix))
